@@ -1,5 +1,5 @@
 .DS_Store
-
+__pycache__
 hw1/data
 hw3/data
 hw5/data
