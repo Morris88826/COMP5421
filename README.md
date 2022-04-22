@@ -10,7 +10,7 @@ HW0: Done
 
 HW1: Not Yet
 
-HW2: Not Yet
+HW2: Done
 
 HW3: Not Yet
 
