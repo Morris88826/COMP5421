@@ -65,7 +65,7 @@ def imageStitching(im1, im2, H2to1):
     t_im1_corners = homogeneous_transform(im1_corners, M)
     t_im2_corners = homogeneous_transform(im2_corners, np.matmul(M, H2to1))
 
-    residue_im2_left = np.argwhere(np.sum(distance_transform_edt(residue_im[:, int(t_im1_corners[1,0])+2]), axis=-1)!=0).flatten()
+    residue_im2_left = np.argwhere(np.sum(distance_transform_edt(residue_im[:, int(t_im1_corners[1,0])+1]), axis=-1)!=0).flatten()
     top_row_point = int(np.amax(np.array([t_im1_corners[1,1],t_im2_corners[1,1], np.amin(residue_im2_left)])))
     bottom_row_point = int(np.amin(np.array([t_im1_corners[3,1],t_im2_corners[3,1],np.amax(residue_im2_left)])))
 
