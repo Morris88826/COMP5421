@@ -14,7 +14,7 @@ HW2: Done
 
 HW3: Not Yet
 
-HW4: Not Yet
+HW4: Done
 
 HW5: Not Yet
 
