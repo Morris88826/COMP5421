@@ -9,6 +9,16 @@ import matplotlib.pyplot as plt
 import scipy.optimize
 import submission as sub
 
+def gaussian_filter_2d(ksize, sigma=1):
+    miu = ksize//2
+    x = np.arange(ksize)
+    y = np.arange(ksize)
+    yv, xv = np.meshgrid(y, x)
+    
+    A = -((x[xv.flatten()]-miu)**2 + (y[yv.flatten()]-miu)**2).reshape((ksize,ksize))
+    gaussian_2d = np.exp(A/(2*sigma**2))/(sigma*np.sqrt(2*np.pi))
+    return gaussian_2d/np.linalg.norm(gaussian_2d)
+
 def _epipoles(E):
     U, S, V = np.linalg.svd(E)
     e1 = V[-1, :]
@@ -16,12 +26,13 @@ def _epipoles(E):
     e2 = V[-1, :]
     return e1, e2
 
-def displayEpipolarF(I1, I2, F):
+def displayEpipolarF(I1, I2, F, out=None):
     e1, e2 = _epipoles(F)
 
     sy, sx, _ = I2.shape
 
     f, [ax1, ax2] = plt.subplots(1, 2, figsize=(12, 9))
+    
     ax1.imshow(I1)
     ax1.set_title('Select a point in this image')
     ax1.set_axis_off()
@@ -29,7 +40,8 @@ def displayEpipolarF(I1, I2, F):
     ax2.set_title('Verify that the corresponding point \n is on the epipolar line in this image')
     ax2.set_axis_off()
 
-    while True:
+    i = 0
+    while i<5:
         plt.sca(ax1)
         x, y = plt.ginput(1, mouse_stop=2)[0]
 
@@ -56,9 +68,13 @@ def displayEpipolarF(I1, I2, F):
             ys = -(l[0] * xs + l[2])/l[1]
 
         # plt.plot(x,y, '*', 'MarkerSize', 6, 'LineWidth', 2)
-        ax1.plot(x, y, '*', MarkerSize=6, linewidth=2)
+        ax1.plot(x, y, '*', markersize=6, linewidth=2)
         ax2.plot([xs, xe], [ys, ye], linewidth=2)
         plt.draw()
+        i += 1
+
+    if out is not None:
+        plt.savefig(out)
 
 
 def _singularize(F):
@@ -84,7 +100,8 @@ def refineF(F, pts1, pts2):
     f = scipy.optimize.fmin_powell(
         lambda x: _objective_F(x, pts1, pts2), F.reshape([-1]),
         maxiter=100000,
-        maxfun=10000
+        maxfun=10000,
+        disp=False
     )
     return _singularize(f.reshape([3, 3]))
 
@@ -145,10 +162,10 @@ def epipolarMatchGUI(I1, I2, F):
             ys = -(l[0] * xs + l[2])/l[1]
 
         # plt.plot(x,y, '*', 'MarkerSize', 6, 'LineWidth', 2)
-        ax1.plot(x, y, '*', MarkerSize=6, linewidth=2)
+        ax1.plot(x, y, '*', markersize=6, linewidth=2)
         ax2.plot([xs, xe], [ys, ye], linewidth=2)
 
         # draw points
         x2, y2 = sub.epipolarCorrespondence(I1, I2, F, xc, yc)
-        ax2.plot(x2, y2, 'ro', MarkerSize=8, linewidth=2)
+        ax2.plot(x2, y2, 'ro', markersize=8, linewidth=2)
         plt.draw()
